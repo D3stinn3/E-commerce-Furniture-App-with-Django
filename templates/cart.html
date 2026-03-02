@@ -27,7 +27,12 @@
         {% endfor %}
         <p>Total Price: ${{ total_price }}</p>
         <a href="{% url 'store' %}">Continue Shopping</a>
-        <a type='submit' class="btn" href="#">Buy Now</a>
+        {% if cart_items %}
+        <form method="POST" action="{% url 'checkout' %}">
+            {% csrf_token %}
+            <button type="submit" class="btn">Buy Now</button>
+        </form>
+        {% endif %}
 
     </div> <!-- Fin de Listado de Productos -->
 </main>    

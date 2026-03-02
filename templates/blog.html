@@ -3,15 +3,14 @@
 {% load static %}
 {% static 'img' as baseUrl %}
 
-    <main class="contenido-principal contenedor ">
-        <h2 class="text-center">Our blog</h2>
+    <main class="contenido-principal contenedor">
+        <h2 class="text-center blog-page-title">Our blog</h2>
 
         <section class="contenedor-blog">
             <div class="blog">
-
+                {% for blog in blogs %}
+                {% if forloop.counter < 3 %}
                 <article class="entrada">
-                    {% for blog in blogs %}
-                    {% if forloop.counter < 3 %}
                     <h2>{{ blog.title }}</h2>
 
                     <div class="imagen">
@@ -20,32 +19,31 @@
 
                     <div class="contenido-blog">
                         <div class="entrada-meta">
-                            <p>Date: <span>{{ blog.date }}</span> </p>
-                            <p>Written by: <span>{{ blog.writter }}</span> </p>
+                            <p>Date: <span>{{ blog.date }}</span></p>
+                            <p>Written by: <span>{{ blog.writter }}</span></p>
                         </div>
 
                         <div class="entrada-blog">
                             <p>{{ blog.desc }}</p>
                         </div>
-                        <a href="blog/blogentry/{{ blog.id }}" class="btn max-width-30">Read</a>
+                        <a href="blog/blogentry/{{ blog.id }}" class="btn btn-blog">Read</a>
                     </div>
-                    {% endif %}
-                    {% endfor %}
-
-
                 </article>
-
+                {% endif %}
+                {% endfor %}
             </div>
 
-            <aside>
-                <h3>Other Blog Entries</h3>
-                <ul>
-                    {% for blog in blogs %}
-                        <li>
-                            <a href="blog/blogentry/{{blog.id}}">{{ blog.title }}</a>
-                        </li>
-                    {% endfor %}
-                </ul>
+            <aside class="blog-sidebar">
+                <div class="sidebar-card">
+                    <h3>Other Blog Entries</h3>
+                    <ul>
+                        {% for blog in blogs %}
+                            <li>
+                                <a href="blog/blogentry/{{blog.id}}">{{ blog.title }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </aside>
         </section>
     </main>
