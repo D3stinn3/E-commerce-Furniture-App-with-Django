@@ -1,0 +1,35 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Inventory - Store Admin{% endblock %}
+{% block content %}
+<h1>Inventory</h1>
+<p><a class="btn" href="{% url 'dashboard_product_add' %}">+ Add product</a></p>
+
+<table>
+    <thead>
+        <tr><th>Title</th><th>Category</th><th>Price</th><th>Stock</th><th>Offer</th><th>Actions</th></tr>
+    </thead>
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.title }}</td>
+            <td>{{ product.category }}</td>
+            <td>KES {{ product.price }}</td>
+            <td>
+                {% if product.stock <= low_stock_threshold %}
+                    <span class="badge low">{{ product.stock }}</span>
+                {% else %}
+                    <span class="badge">{{ product.stock }}</span>
+                {% endif %}
+            </td>
+            <td>{% if product.offer %}Yes{% else %}-{% endif %}</td>
+            <td>
+                <a class="btn secondary" href="{% url 'dashboard_product_edit' product.id %}">Edit</a>
+                <a class="btn danger" href="{% url 'dashboard_product_delete' product.id %}">Delete</a>
+            </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="6">No products yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

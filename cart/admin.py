@@ -14,8 +14,8 @@ class OrderItemInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('order_number', 'user', 'total_price', 'created_at')
-    list_filter = ('created_at',)
-    search_fields = ('user__username', 'user__email')
-    readonly_fields = ('user', 'total_price', 'created_at')
+    list_display = ('order_number', 'user', 'total_price', 'status', 'created_at')
+    list_filter = ('status', 'created_at')
+    search_fields = ('user__username', 'user__email', 'paystack_reference')
+    readonly_fields = ('user', 'total_price', 'created_at', 'paystack_reference')
     inlines = [OrderItemInline]

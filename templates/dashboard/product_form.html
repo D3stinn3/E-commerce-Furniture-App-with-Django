@@ -1,0 +1,12 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}{{ title }} - Store Admin{% endblock %}
+{% block content %}
+<h1>{{ title }}</h1>
+
+<form method="post" enctype="multipart/form-data" style="max-width: 560px;">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn">Save</button>
+    <a class="btn secondary" href="{% url 'dashboard_inventory' %}">Cancel</a>
+</form>
+{% endblock %}

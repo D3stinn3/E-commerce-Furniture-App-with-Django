@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
+from django.conf import settings
+from django.contrib import messages
 from .models import *
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from .forms import ContactForm
 
 # Create your views here.
@@ -26,12 +28,20 @@ def contact(request):
             subject = form.cleaned_data['subject']
             phone_no = form.cleaned_data['phone_no']
             message = form.cleaned_data['message']
-            send_mail(
-                subject=f'{subject}',
-                message=f'Name: {name}\nEmail: {email}\nPhone Number: {phone_no}\nMessage: {message}',
-                from_email=email,
-                recipient_list=['christelpeeris@example.com'],  # Your email address to receive the notification
+            # Gmail rejects an arbitrary "from", so send from the configured account
+            # and set the visitor's address as reply-to instead.
+            mail = EmailMessage(
+                subject=subject,
+                body=f'Name: {name}\nEmail: {email}\nPhone Number: {phone_no}\nMessage: {message}',
+                from_email=settings.EMAIL_HOST_USER,
+                to=[settings.EMAIL_RECEIVING_USER],
+                reply_to=[email],
             )
+            try:
+                mail.send(fail_silently=False)
+            except Exception:
+                messages.error(request, 'Sorry, your message could not be sent. Please try again later.')
+                return render(request, 'contact.html', {'form': form})
             return redirect('success')  # Redirect to a success page
     else:
         form = ContactForm()

@@ -45,6 +45,9 @@
           <li class="nav-link"><a href="{% url 'login' %}">Cart</a></li>
           {% endif %}
           <li class="nav-link"><a href="{% url 'contact' %}">Contact</a></li>
+          {% if user.is_staff %}
+          <li class="nav-link"><a href="{% url 'dashboard_home' %}">Dashboard</a></li>
+          {% endif %}
           {% if user.is_authenticated %}
           <li class="nav-link">
             Hello, {{user.username}} | <a href="{% url 'logout' %}"> Logout</a>

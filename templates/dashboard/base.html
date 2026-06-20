@@ -1,0 +1,60 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Store Admin{% endblock %}</title>
+    <style>
+        :root { --brand: #037bc0; --brand-dark: #005485; --bg: #f4f6f8; }
+        * { box-sizing: border-box; }
+        body { margin: 0; font-family: -apple-system, Segoe UI, Roboto, Arial, sans-serif; background: var(--bg); color: #222; }
+        .layout { display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background: var(--brand-dark); color: #fff; padding: 20px 0; }
+        .sidebar h2 { font-size: 18px; padding: 0 20px 16px; margin: 0; border-bottom: 1px solid rgba(255,255,255,.15); }
+        .sidebar a { display: block; color: #cfe6f5; text-decoration: none; padding: 12px 20px; font-size: 14px; }
+        .sidebar a:hover, .sidebar a.active { background: var(--brand); color: #fff; }
+        .content { flex: 1; padding: 28px 32px; }
+        .content h1 { margin-top: 0; }
+        .cards { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 28px; }
+        .card { background: #fff; border-radius: 10px; padding: 20px; flex: 1 1 180px; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+        .card .label { color: #777; font-size: 13px; }
+        .card .value { font-size: 26px; font-weight: 700; color: var(--brand-dark); margin-top: 6px; }
+        table { width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden; box-shadow: 0 1px 3px rgba(0,0,0,.08); }
+        th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid #eee; font-size: 14px; }
+        th { background: var(--brand); color: #fff; }
+        .btn { display: inline-block; background: var(--brand); color: #fff; padding: 8px 14px; border-radius: 6px; text-decoration: none; border: none; cursor: pointer; font-size: 14px; }
+        .btn.secondary { background: #6c757d; }
+        .btn.danger { background: #c0392b; }
+        .badge { padding: 2px 8px; border-radius: 10px; font-size: 12px; background: #eee; }
+        .badge.low { background: #ffe0e0; color: #c0392b; }
+        .messages { list-style: none; padding: 0; }
+        .messages li { background: #e9f6ef; border: 1px solid #b7e0c8; padding: 10px 14px; border-radius: 6px; margin-bottom: 10px; }
+        form.inline { display: inline; }
+        .form-control { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 6px; margin-bottom: 12px; }
+        label { font-weight: 600; font-size: 13px; display: block; margin-bottom: 4px; }
+        .filters { display: flex; gap: 12px; align-items: flex-end; margin-bottom: 20px; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <nav class="sidebar">
+        <h2>Store Admin</h2>
+        <a href="{% url 'dashboard_home' %}">Overview</a>
+        <a href="{% url 'dashboard_inventory' %}">Inventory</a>
+        <a href="{% url 'dashboard_reports' %}">Sales reports</a>
+        <a href="/admin/">Django admin</a>
+        <a href="{% url 'index' %}">View store</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    </nav>
+    <main class="content">
+        {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}<li>{{ message }}</li>{% endfor %}
+        </ul>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+</div>
+</body>
+</html>

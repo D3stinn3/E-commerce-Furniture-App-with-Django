@@ -10,6 +10,7 @@ urlpatterns = [
     path('load-more/', views.load_more_products, name='load_more_products'),
     path('product', views.product_list,name='product'),
     path('checkout/', views.checkout, name='checkout'),
+    path('payment/callback/', views.paystack_callback, name='paystack_callback'),
     path('order-success/<int:order_id>/', views.order_success, name='order_success'),
     path('order/<int:order_id>/receipt/', views.download_receipt, name='download_receipt'),
 ]

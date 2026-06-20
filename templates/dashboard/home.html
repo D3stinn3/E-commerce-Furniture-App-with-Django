@@ -1,0 +1,43 @@
+{% extends 'dashboard/base.html' %}
+{% block title %}Overview - Store Admin{% endblock %}
+{% block content %}
+<h1>Overview</h1>
+
+<div class="cards">
+    <div class="card">
+        <div class="label">Revenue (paid)</div>
+        <div class="value">KES {{ total_revenue }}</div>
+    </div>
+    <div class="card">
+        <div class="label">Paid orders</div>
+        <div class="value">{{ order_count }}</div>
+    </div>
+    <div class="card">
+        <div class="label">Products</div>
+        <div class="value">{{ product_count }}</div>
+    </div>
+    <div class="card">
+        <div class="label">Low stock (&le; {{ low_stock_threshold }})</div>
+        <div class="value">{{ low_stock_count }}</div>
+    </div>
+</div>
+
+<h2>Recent paid orders</h2>
+<table>
+    <thead>
+        <tr><th>Order</th><th>Customer</th><th>Total</th><th>Date</th></tr>
+    </thead>
+    <tbody>
+        {% for order in recent_orders %}
+        <tr>
+            <td>{{ order.order_number }}</td>
+            <td>{{ order.user.username }}</td>
+            <td>KES {{ order.total_price }}</td>
+            <td>{{ order.created_at|date:"M d, Y H:i" }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4">No paid orders yet.</td></tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

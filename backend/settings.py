@@ -13,20 +13,28 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 from pathlib import Path
 import os
 
+from dotenv import load_dotenv
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+# Load environment variables from a .env file at the project root (if present).
+load_dotenv(BASE_DIR / '.env')
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-b-(fpsq)g8o$s=gdl$)6u)q8=-g^1$%e9jy_@kn=+%g@muofij'
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY',
+    'django-insecure-dev-only-change-me',
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [h.strip() for h in os.environ.get('ALLOWED_HOSTS', '').split(',') if h.strip()]
 
 
 # Application definition
@@ -41,6 +49,7 @@ INSTALLED_APPS = [
     'store.apps.StoreConfig',
     'cart.apps.CartConfig',
     'account.apps.AccountConfig',
+    'dashboard.apps.DashboardConfig',
 ]
 
 MIDDLEWARE = [
@@ -147,7 +156,19 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = 'christelpeeris@gmail.com'
-EMAIL_HOST_PASSWORD = 'zlbc xavm wvle sqjw'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
+# Where contact-form submissions are delivered (falls back to the sending account).
+EMAIL_RECEIVING_USER = os.environ.get('EMAIL_RECEIVING_USER', EMAIL_HOST_USER)
 
-BASE_URL = 'http://localhost:8000'
+# @login_required redirects to the project's custom login view (url name 'login',
+# served at /account/login) instead of Django's nonexistent default /accounts/login/.
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = '/'
+
+BASE_URL = os.environ.get('BASE_URL', 'http://localhost:8000')
+
+# --- Paystack ---
+PAYSTACK_SECRET_KEY = os.environ.get('PAYSTACK_SECRET_KEY', '')
+PAYSTACK_PUBLIC_KEY = os.environ.get('PAYSTACK_PUBLIC_KEY', '')
+PAYSTACK_CURRENCY = os.environ.get('PAYSTACK_CURRENCY', 'KES')

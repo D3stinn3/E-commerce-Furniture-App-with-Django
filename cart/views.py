@@ -1,6 +1,15 @@
+import uuid
+
+import requests
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse, HttpResponse
+from django.urls import reverse
+from django.conf import settings
+from django.contrib import messages
+from django.db.models import Q, F, Value
+from django.db.models.functions import Greatest
 from .models import *
+from . import paystack
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_POST
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -21,7 +30,15 @@ def load_more_products(request):
     offset = int(request.GET.get('offset', 0))
     limit = int(request.GET.get('limit', 2))
     products = Product.objects.all()[offset:offset+limit]
-    products_data = [{'name': product.name} for product in products]
+    products_data = [
+        {
+            'id': product.id,
+            'title': product.title,
+            'price': product.price,
+            'img': product.img.url if product.img else '',
+        }
+        for product in products
+    ]
     return JsonResponse({'products': products_data})
 
 def product_list(request):
@@ -45,28 +62,32 @@ def product_list(request):
     return render(request, 'product.html', {'products': products, 'category':category, 'min_price':min_price, 'max_price':max_price})
 
 def search(request):
-    query = request.GET.get('query')
+    query = request.GET.get('query') or ''
     products = Product.objects.all()
-    pcq = products.filter(category__icontains=query)
-    ptq = products.filter(title__icontains=query)
-    return render(request, 'search.html', {'products': pcq, 'products': ptq, 'navbar': '#search', 'query': query})
+    if query:
+        products = products.filter(
+            Q(title__icontains=query) | Q(category__icontains=query)
+        )
+    return render(request, 'search.html', {'products': products, 'navbar': '#search', 'query': query})
 
+@login_required
 def view_cart(request):
     cart_items = CartItem.objects.filter(user=request.user)
     total_price = sum(item.product.price * item.quantity for item in cart_items)
     return render(request, 'cart.html', {'cart_items': cart_items, 'total_price': total_price})
- 
+
 @login_required
 def add(request, product_id):
-    product = Product.objects.get(id=product_id)
-    cart_item, created = CartItem.objects.get_or_create(product=product, 
+    product = get_object_or_404(Product, id=product_id)
+    cart_item, created = CartItem.objects.get_or_create(product=product,
                                                        user=request.user)
     cart_item.quantity += 1
     cart_item.save()
     return redirect('view_cart')
 
+@login_required
 def remove(request, item_id):
-    cart_item = CartItem.objects.get(id=item_id)
+    cart_item = get_object_or_404(CartItem, id=item_id, user=request.user)
     cart_item.delete()
     return redirect('view_cart')
 
@@ -79,31 +100,111 @@ def checkout(request):
     if not cart_items.exists():
         return redirect('view_cart')
 
+    if not request.user.email:
+        messages.error(request, 'Please add an email address to your account before paying.')
+        return redirect('view_cart')
+
     total_price = sum(item.product.price * item.quantity for item in cart_items)
 
+    # Create a pending order and snapshot the items. The cart is NOT cleared yet;
+    # it is only cleared once Paystack confirms the payment in paystack_callback.
     order = Order.objects.create(
         user=request.user,
         total_price=total_price,
+        status='pending',
     )
 
-    order_items_to_create = []
-    for item in cart_items:
-        order_items_to_create.append(OrderItem(
+    order_items_to_create = [
+        OrderItem(
             order=order,
             product_title=item.product.title,
             product_price=item.product.price,
             quantity=item.quantity,
-        ))
+        )
+        for item in cart_items
+    ]
     OrderItem.objects.bulk_create(order_items_to_create)
 
-    cart_items.delete()
+    reference = f'{order.id}-{uuid.uuid4().hex[:8]}'
+    order.paystack_reference = reference
+    order.save(update_fields=['paystack_reference'])
 
-    return redirect('order_success', order_id=order.id)
+    # Build the callback from the current request so Paystack returns the buyer to
+    # the exact same host (scheme + hostname) they are browsing on. This keeps the
+    # session cookie valid (127.0.0.1 and localhost are separate cookie jars).
+    callback_url = request.build_absolute_uri(reverse('paystack_callback'))
+
+    try:
+        data = paystack.initialize_transaction(
+            email=request.user.email,
+            amount_subunit=total_price * 100,  # KES -> cents
+            reference=reference,
+            callback_url=callback_url,
+        )
+    except (requests.RequestException, ValueError) as exc:
+        order.status = 'failed'
+        order.save(update_fields=['status'])
+        messages.error(request, f'Could not start payment: {exc}')
+        return redirect('view_cart')
+
+    return redirect(data['authorization_url'])
 
 
-@login_required
+def paystack_callback(request):
+    # No @login_required: Paystack's verification (not the browser session) is the
+    # source of truth here. The order is finalized only when Paystack confirms the
+    # reference was paid, so this is safe even for an anonymous/third-party hit.
+    reference = request.GET.get('reference') or request.GET.get('trxref')
+    if not reference:
+        messages.error(request, 'Missing payment reference.')
+        return redirect('view_cart')
+
+    order = get_object_or_404(Order, paystack_reference=reference)
+
+    # Already finalized – just show the result.
+    if order.status == 'paid':
+        return redirect(_order_success_url(order))
+
+    try:
+        data = paystack.verify_transaction(reference)
+    except (requests.RequestException, ValueError) as exc:
+        messages.error(request, f'Could not verify payment: {exc}')
+        return redirect('view_cart')
+
+    if data.get('status') == 'success':
+        order.status = 'paid'
+        order.save(update_fields=['status'])
+
+        # Decrement stock for purchased products (match by title snapshot).
+        for item in order.items.all():
+            Product.objects.filter(title=item.product_title).update(
+                stock=Greatest(F('stock') - item.quantity, Value(0))
+            )
+
+        # Clear the buyer's cart (the order owner, not necessarily request.user).
+        CartItem.objects.filter(user=order.user).delete()
+        return redirect(_order_success_url(order))
+
+    order.status = 'failed'
+    order.save(update_fields=['status'])
+    messages.error(request, 'Payment was not completed. Your cart has been kept.')
+    return redirect('view_cart')
+
+
+def _order_success_url(order):
+    """Order-success URL including the reference token so the receipt is viewable
+    even if the session is momentarily absent (e.g. returning from Paystack)."""
+    return f"{reverse('order_success', args=[order.id])}?ref={order.paystack_reference}"
+
+
 def order_success(request, order_id):
-    order = get_object_or_404(Order, id=order_id, user=request.user)
+    order = get_object_or_404(Order, id=order_id)
+    # Grant access to the owner, or to anyone presenting the matching reference
+    # token (used right after the Paystack redirect, before the session settles).
+    ref = request.GET.get('ref')
+    is_owner = request.user.is_authenticated and order.user_id == request.user.id
+    if not is_owner and (not ref or ref != order.paystack_reference):
+        return redirect('login')
     return render(request, 'order_success.html', {'order': order})
 
 

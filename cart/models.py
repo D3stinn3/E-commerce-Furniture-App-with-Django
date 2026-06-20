@@ -8,6 +8,7 @@ class Product(models.Model):
     desc =  models.TextField()
     price = models.IntegerField()
     offer = models.BooleanField(default=False)
+    stock = models.PositiveIntegerField(default=0)
     CHOICES = (
         ('Bed', 'Bed'),
         ('Sofa', 'Sofa'),
@@ -18,6 +19,10 @@ class Product(models.Model):
     )
 
     category = models.CharField(max_length=20, choices=CHOICES)
+
+    @property
+    def in_stock(self):
+        return self.stock > 0
 
     def __str__(self):
         return self.title
@@ -33,9 +38,17 @@ class CartItem(models.Model):
 
 
 class Order(models.Model):
+    STATUS_CHOICES = (
+        ('pending', 'Pending'),
+        ('paid', 'Paid'),
+        ('failed', 'Failed'),
+    )
+
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='orders')
     created_at = models.DateTimeField(auto_now_add=True)
     total_price = models.IntegerField()
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='pending')
+    paystack_reference = models.CharField(max_length=100, blank=True)
 
     class Meta:
         ordering = ['-created_at']
