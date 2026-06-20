@@ -13,7 +13,7 @@
         <input type="date" id="end" name="end" value="{{ end }}" class="form-control" style="margin-bottom:0;">
     </div>
     <button type="submit" class="btn">Apply</button>
-    <a class="btn secondary" href="{% url 'dashboard_reports_export' %}?start={{ start }}&end={{ end }}">Export CSV</a>
+    <a class="btn btn--ghost" href="{% url 'dashboard_reports_export' %}?start={{ start }}&end={{ end }}">Export CSV</a>
 </form>
 
 <div class="cards">
@@ -32,7 +32,7 @@
 </div>
 
 <h2>Top products</h2>
-<table>
+<table class="table">
     <thead><tr><th>Product</th><th>Qty</th><th>Revenue</th></tr></thead>
     <tbody>
         {% for row in top_products %}
@@ -48,7 +48,7 @@
 </table>
 
 <h2 style="margin-top:28px;">Revenue by day</h2>
-<table>
+<table class="table">
     <thead><tr><th>Day</th><th>Orders</th><th>Revenue</th></tr></thead>
     <tbody>
         {% for row in daily %}

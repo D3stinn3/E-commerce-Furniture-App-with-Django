@@ -7,8 +7,8 @@
     <h2 class="text-center">Order Placed Successfully!</h2>
 
     <div style="max-width: 600px; margin: 0 auto; padding: 2rem;">
-        <div style="background: #f9f9f9; border: 1px solid #e1e1e1; border-radius: 10px 0px 10px 0px; padding: 2.5rem; margin-bottom: 2rem;">
-            <h3 style="text-align: center; border-bottom: 2px solid #e1e1e1; padding-bottom: 1rem; margin-bottom: 1.5rem;">
+        <div class="card" style="margin-bottom: 2rem;">
+            <h3 style="text-align: center; border-bottom: 2px solid var(--color-line); padding-bottom: 1rem; margin-bottom: 1.5rem;">
                 Order {{ order.order_number }}
             </h3>
             <p><strong>Date:</strong> {{ order.created_at|date:"F d, Y \a\t h:i A" }}</p>
@@ -16,7 +16,7 @@
 
             <table style="width: 100%; border-collapse: collapse; margin: 1.5rem 0;">
                 <thead>
-                    <tr style="background: #037bc0; color: #fff;">
+                    <tr style="background: var(--color-primary); color: var(--color-on-primary);">
                         <th style="padding: 10px; text-align: left;">Item</th>
                         <th style="padding: 10px; text-align: center;">Qty</th>
                         <th style="padding: 10px; text-align: right;">Price</th>
@@ -25,7 +25,7 @@
                 </thead>
                 <tbody>
                     {% for item in order.items.all %}
-                    <tr style="border-bottom: 1px solid #e1e1e1;">
+                    <tr style="border-bottom: 1px solid var(--color-line);">
                         <td style="padding: 10px;">{{ item.product_title }}</td>
                         <td style="padding: 10px; text-align: center;">{{ item.quantity }}</td>
                         <td style="padding: 10px; text-align: right;">${{ item.product_price }}</td>
@@ -34,7 +34,7 @@
                     {% endfor %}
                 </tbody>
                 <tfoot>
-                    <tr style="border-top: 2px solid #037bc0;">
+                    <tr style="border-top: 2px solid var(--color-primary);">
                         <td colspan="3" style="padding: 10px; text-align: right; font-weight: bold;">Grand Total:</td>
                         <td style="padding: 10px; text-align: right; font-weight: bold; font-size: 1.2em;">${{ order.total_price }}</td>
                     </tr>

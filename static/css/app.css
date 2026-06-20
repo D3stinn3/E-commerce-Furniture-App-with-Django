@@ -12,16 +12,19 @@ html {
 }
 
 body {
-    font-family: 'Raleway', sans-serif;
+    font-family: var(--font-body);
     font-size: 1.6rem;
-    line-height: 2;
+    line-height: 1.7;
+    background-color: var(--color-bg);
+    color: var(--color-ink);
 }
 
 /* Globales */
 h1,
 h2,
 h3 {
-    font-family: 'Playfair Display', serif;
+    font-family: var(--font-head);
+    color: var(--color-ink);
     margin: 0 0 2rem 0;
 }
 
@@ -58,7 +61,7 @@ h3 {
 
 a {
     text-decoration: none;
-    color: #000;
+    color: var(--color-ink);
 }
 
 .contenedor {
@@ -72,14 +75,14 @@ img {
 }
 
 .btn {
-    background-color: #000;
+    background-color: var(--color-primary);
     display: block;
-    color: #FFF;
+    color: var(--color-on-primary);
     text-transform: uppercase;
-    font-weight: 900;
+    font-weight: 700;
     font-size: 15px;
     padding: 1rem 2rem;
-    transition: color .5s ease-out;
+    transition: background-color .3s ease-out;
     text-align: center;
     border: none;
     border-radius: 5px 0px 5px 0px;
@@ -87,13 +90,13 @@ img {
 }
 
 .message{
-    color: #037bc0;
+    color: var(--color-primary);
 }
 
 .btn:hover {
-    background-color: #000;
+    background-color: var(--color-primary-dark);
     cursor: pointer;
-    color: #037bc0;
+    color: var(--color-on-primary);
 }
 
 @media (min-width: 768PX) { 
@@ -120,7 +123,7 @@ img {
 }
 
 .nombre-sitio span {
-    color: #037bc0;
+    color: var(--color-primary);
 }
 
 .auth{
@@ -134,39 +137,91 @@ img {
 }
 
 .contenedor-navegacion {
-    border-top: .1rem solid #e1e1e1;
+    border-top: .1rem solid var(--color-line);
+    border-bottom: .1rem solid var(--color-line);
+    background: var(--color-surface);
+    position: sticky;
+    top: 0;
+    z-index: 50;
 }
 
 .nav-principal {
-    padding: 2rem 0;
+    padding: 1.4rem 0;
+    display: flex;
     align-items: center;
+    justify-content: space-between;
+    position: relative;
 }
 
 a:hover{
-    color: #037bc0;
+    color: var(--color-primary);
     transition: color 0.3s ease-in-out;
     text-decoration: none;
 }
 
-.nav-links {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    list-style: none;
-    justify-content: space-between;
-    font-weight: 600;
+/* Hamburger button — visible on mobile/tablet, hidden on desktop */
+.nav-toggle {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 4.4rem;
+    height: 4.4rem;
+    padding: 1rem;
+    background: transparent;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    margin-left: auto;
+}
+.nav-toggle span {
+    display: block;
+    height: 2px;
+    width: 100%;
+    background: var(--color-ink);
+    border-radius: 2px;
 }
 
+.nav-links {
+    display: none;
+    flex-direction: column;
+    align-items: stretch;
+    gap: .4rem;
+    list-style: none;
+    width: 100%;
+    margin: 0;
+    padding: 1rem 0 0;
+    font-weight: 600;
+}
+.nav-links.open { display: flex; }
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: .6rem 0;
+}
+
+.nav-greeting { color: var(--color-muted); font-weight: 500; }
+
 .nav-link a:hover {
-    color: #037bc0;
+    color: var(--color-primary);
     text-decoration: none;
 }
 
-@media (min-width: 768px) {
-    .nav-principal {
-        justify-content: space-between;
+/* Tablet & desktop: inline horizontal nav, no hamburger */
+@media (min-width: 992px) {
+    .nav-toggle { display: none; }
+    .nav-links {
+        display: flex;
         flex-direction: row;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 1.8rem;
+        width: auto;
+        padding: 0;
     }
+    .nav-link { padding: 0; }
 }
 
 .hero {
@@ -212,7 +267,7 @@ a:hover{
 }
 
 .categoria a:hover {
-    background-color: #037bc0;
+    background-color: var(--color-primary);
     color: #FFFFFF;
     border-bottom-right-radius: 1rem;
 }
@@ -229,7 +284,7 @@ a:hover{
 
 /** Bloque Nosotros */
 .sobre-nosotros {
-    background-image: linear-gradient(to bottom, transparent 50%, #037bc0 50%, #037bc0 100%), url(../img/nosotros.jpg);
+    background-image: linear-gradient(to bottom, transparent 50%, var(--color-primary) 50%, var(--color-primary) 100%), url(../img/nosotros.jpg);
     background-position: center, top left;
     background-repeat: no-repeat;
     background-size: 100%, 70rem;
@@ -238,7 +293,7 @@ a:hover{
 
 @media (min-width: 768px) {
     .sobre-nosotros {
-        background-image: linear-gradient(to right, transparent 50%, #037bc0 50%, #037bc0 100%), url(../img/nosotros.jpg);
+        background-image: linear-gradient(to right, transparent 50%, var(--color-primary) 50%, var(--color-primary) 100%), url(../img/nosotros.jpg);
         background-position: left center;
         padding: 10rem 0;
         background-size: 100%, 100rem;
@@ -346,7 +401,7 @@ a:hover{
 }
 
 .producto {
-    background-color: #037bc0;
+    background-color: var(--color-primary);
     margin-bottom: 2rem;
     border-radius: 10px 0px 10px 0px;
 }
@@ -357,7 +412,7 @@ a:hover{
 }
 
 .product-post {
-    background-color: #037bc0;
+    background-color: var(--color-primary);
     margin-bottom: 2rem;
     border-radius: 10px 0px 10px 0px;
 }
@@ -399,7 +454,7 @@ a:hover{
 /** Footer **/
 
 .site-footer {
-    border-top: 1px solid #e1e1e1;
+    border-top: 1px solid var(--color-line);
     margin-top: 5rem;
     padding-top: 5rem;
 }
@@ -441,7 +496,7 @@ a:hover{
 .copyright {
     margin-top: 5rem;
     text-align: center;
-    color: #005485;
+    color: var(--color-primary-dark);
 }
 
 /** Nosotros **/
@@ -487,18 +542,31 @@ a:hover{
 
 .spec_offer{
     position:absolute;
-    background: #000;
+    background: var(--color-accent);
     width: 118px;
     height: 30px;
     border-radius: 10px 0px 10px 0px;
 }
 
+.entrada .imagen { width: 100%; }
+
 .entrada img{
+    width: 100%;
+    height: 22rem;
+    object-fit: cover;
     border-radius: 10px 0px 10px 0px;
 }
 
+@media (min-width: 576px) {
+    .entrada img { height: 30rem; }
+}
+
+@media (min-width: 992px) {
+    .entrada img { height: 34rem; }
+}
+
 .entrada {
-    border-bottom: 2px solid #e1e1e1;
+    border-bottom: 2px solid var(--color-line);
     margin-bottom: 2rem;
     padding-bottom: 3rem;
 }
@@ -543,7 +611,7 @@ a:hover{
 }
 
 .entrada-meta span {
-    color: #037bc0;
+    color: var(--color-primary);
 }
 
 .btn-blog {
@@ -567,8 +635,8 @@ a:hover{
 }
 
 .sidebar-card {
-    background-color: #f9f9f9;
-    border: 1px solid #e1e1e1;
+    background-color: var(--color-surface-2);
+    border: 1px solid var(--color-line);
     border-radius: 10px 0px 10px 0px;
     padding: 2.5rem;
 }
@@ -577,7 +645,7 @@ a:hover{
     text-align: center;
     margin-bottom: 1.5rem;
     padding-bottom: 1rem;
-    border-bottom: 2px solid #e1e1e1;
+    border-bottom: 2px solid var(--color-line);
 }
 
 .sidebar-card ul {
@@ -589,7 +657,7 @@ a:hover{
 .sidebar-card ul li {
     margin-bottom: 1rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid #e1e1e1;
+    border-bottom: 1px solid var(--color-line);
 }
 
 .sidebar-card ul li:last-child {
@@ -607,7 +675,7 @@ a:hover{
 }
 
 .sidebar-card ul li a:hover {
-    background-color: #037bc0;
+    background-color: var(--color-primary);
     color: #fff;
 }
 
@@ -658,13 +726,13 @@ a:hover{
 }
 
 .formulario fieldset {
-    border: 1px solid black;
+    border: 1px solid var(--color-line);
     margin-bottom: 2rem;
     border-radius: 10px 0px ;
 }
 
 .formulario legend {
-    background-color: #005485;
+    background-color: var(--color-primary-dark);
     width: 100%;
     text-align: center;
     color: #FFF;
@@ -718,7 +786,7 @@ a:hover{
 }
 
 .store {
-    background-color: #037bc0;
+    background-color: var(--color-primary);
     margin-bottom: 2rem;
     border-radius: 10px 0px;
 }
@@ -751,9 +819,9 @@ a:hover{
     flex-direction: row;
     font-size: 16px;
     transition: border .5s ease-in-out;
-    border: 1px solid #ccc;
+    border: 1px solid var(--color-line);
     border-radius: 5px 0px;
-    box-sizing: border-box; 
+    box-sizing: border-box;
 }
 
 .form {
@@ -762,7 +830,7 @@ a:hover{
     height: 200px;
     font-size: 16px;
     transition: border .3s ease-in-out;
-    border: 1px solid #ccc;
+    border: 1px solid var(--color-line);
     border-radius: 5px 0px;
     box-sizing: border-box; 
 }
@@ -773,7 +841,7 @@ a:hover{
 .input-search:focus,
 .input-fil:focus{
     outline: 0;
-    border: 1px solid #037bc0;
+    border: 1px solid var(--color-primary);
     box-shadow: none;
 }
 
@@ -781,7 +849,7 @@ a:hover{
 .form::placeholder,
 .input::placeholder,
 .input-fil::placeholder {
-    color: #037bc0;
+    color: var(--color-primary);
 }
 
 .search {
@@ -796,7 +864,7 @@ a:hover{
     height: 40px;
     font-size: 16px;
     transition: border .3s ease-in-out;
-    border: 1px solid #ccc;
+    border: 1px solid var(--color-line);
     border-radius: 5px 0px;
     box-sizing: border-box;
     margin-right: 20px;
@@ -807,7 +875,7 @@ a:hover{
     width: 100px;
     border: 0;
     outline: 0;
-    background: #037bc0;
+    background: var(--color-primary);
     color: #fff;
     transition: background-color .3s ease-in-out;
     border-radius: 5px 0px;
@@ -820,8 +888,8 @@ a:hover{
     width: 90px;
     border: 0;
     outline: 0;
-    background: #000;
-    color: #fff;
+    background: var(--color-ink);
+    color: var(--color-surface);
     transition: color .3s ease-in-out;
     border-radius: 5px 0px;
     cursor: pointer;
@@ -829,19 +897,19 @@ a:hover{
 }
 
 .pad button:focus{
-    color: #037bc0;
+    color: var(--color-primary);
 }
 
 .pad button:hover{
-    color: #037bc0;
+    color: var(--color-primary);
 }
 
 .search button:focus{
-    background: #005485;
+    background: var(--color-primary-dark);
 }
 
 .search button:hover{
-    background: #005485;
+    background: var(--color-primary-dark);
 }
 
 .input{
@@ -850,7 +918,7 @@ a:hover{
     height: 40px;
     font-size: 16px;
     transition: border .3s ease-in-out;
-    border: 1px solid #ccc;
+    border: 1px solid var(--color-line);
     border-radius: 5px 0px;
     box-sizing: border-box;
 }
@@ -861,7 +929,7 @@ a:hover{
     height: 40px;
     font-size: 16px;
     transition: border .3s ease-in-out;
-    border: 1px solid #ccc;
+    border: 1px solid var(--color-line);
     border-radius: 5px 0px;
     box-sizing: border-box;
     margin-right: 10px;
@@ -886,6 +954,61 @@ a:hover{
 .send{
     margin-bottom: 30px;
 }
+
+/* ============================================================================
+   Responsive tiers — tablet (576–991px) sits between mobile and desktop.
+   ========================================================================== */
+
+/* Fluid media everywhere so nothing overflows on small screens. */
+img, video { max-width: 100%; height: auto; }
+
+/* Tablet: 2-up grids for the simple galleries/category lists. */
+@media (min-width: 576px) and (max-width: 991px) {
+    .listado-categorias,
+    .galeria,
+    .listado-productos {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+    .galeria img { width: 100%; height: 28rem; }
+    /* Reset the desktop product masonry spans so the 2-col grid is even. */
+    .producto,
+    .producto:nth-child(1),
+    .producto:nth-child(2),
+    .producto:nth-child(3),
+    .producto:nth-child(4),
+    .producto:nth-child(5),
+    .producto:nth-child(6),
+    .store {
+        grid-column: auto !important;
+        display: block;
+    }
+    .producto img, .store img { height: 26rem; width: 100%; object-fit: cover; }
+}
+
+/* Mobile: gallery images shouldn't be a fixed 40rem square. */
+@media (max-width: 575px) {
+    .galeria img { width: 100%; height: 26rem; }
+    .input-search, .input-fil { width: 100%; margin-right: 0; }
+    .search { padding-top: 4rem; }
+    /* Keep the site title from overflowing narrow phones. */
+    .nombre-sitio { font-size: 2.8rem; margin-top: 2.5rem; }
+}
+
+/* Never allow stray content to cause a horizontal scrollbar. */
+html, body { overflow-x: hidden; }
+
+/* The search view's huge top padding is desktop-only. */
+@media (max-width: 991px) {
+    .search { padding-top: 6rem; }
+    .input-search { max-width: 100%; }
+}
+
+/* Cards/inputs that read color from tokens already adapt to dark mode; ensure
+   the legend and footer copy stay legible on dark surfaces. */
+.sidebar-card { background-color: var(--color-surface-2); }
+.formulario legend { color: var(--color-on-primary); }
 
 
 

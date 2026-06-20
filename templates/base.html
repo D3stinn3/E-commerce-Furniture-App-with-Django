@@ -21,11 +21,22 @@
       crossorigin="anonymous"
     />
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Raleway:wght@400;700;900&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="{% static 'css/app.css' %}" />
     <link rel="stylesheet" href="{% static 'css/normalize.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/theme.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/app.css' %}" />
+    <script>
+      // Pre-paint: set theme before first render to avoid a flash (FOUC).
+      (function () {
+        try {
+          var t = localStorage.getItem('theme');
+          if (!t) t = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+          document.documentElement.setAttribute('data-theme', t);
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <header>
@@ -34,8 +45,18 @@
 
     <div class="contenedor-navegacion">
       <nav class="nav-principal contenedor">
-        <ul class="nav-links">
-          <li class="nav-link"><a href="{% url 'index' %}">Platfrom</a></li>
+        <button
+          type="button"
+          class="nav-toggle"
+          id="nav-toggle"
+          aria-label="Toggle menu"
+          aria-controls="nav-links"
+          aria-expanded="false"
+        >
+          <span></span><span></span><span></span>
+        </button>
+        <ul class="nav-links" id="nav-links">
+          <li class="nav-link"><a href="{% url 'index' %}">Platform</a></li>
           <li class="nav-link"><a href="{% url 'store' %}">Store</a></li>
           <li class="nav-link"><a href="{% url 'blog' %}">Blog</a></li>
           <li class="nav-link"><a href="{% url 'gallery' %}">Gallery</a></li>
@@ -50,14 +71,18 @@
           {% endif %}
           {% if user.is_authenticated %}
           <li class="nav-link">
-            Hello, {{user.username}} | <a href="{% url 'logout' %}"> Logout</a>
+            <span class="nav-greeting">Hello, {{ user.username }}</span>
+            <a href="{% url 'logout' %}">Logout</a>
           </li>
           {% else %}
           <li class="nav-link">
-            <a href="{% url 'login' %}">Login </a>|
-            <a href="{% url 'signup' %}"> Signup</a>
+            <a href="{% url 'login' %}">Login</a>
+            <a href="{% url 'signup' %}">Signup</a>
           </li>
           {% endif %}
+          <li class="nav-link">
+            <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Toggle dark mode">☾</button>
+          </li>
         </ul>
       </nav>
     </div>
@@ -100,5 +125,6 @@
 
       <p class="copyright">All rights reserved, BBS</p>
     </footer>
+    <script src="{% static 'js/theme.js' %}"></script>
   </body>
 </html>

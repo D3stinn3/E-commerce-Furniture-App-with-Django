@@ -1,0 +1,193 @@
+/* ============================================================================
+   theme.css — single source of truth for the design system.
+   Used by BOTH the storefront (app.css) and the admin (admin.css).
+   Light + dark palettes live here; nothing else should hardcode brand colors.
+   Breakpoints: mobile <576px · tablet 576–991px · desktop >=992px
+   ========================================================================== */
+
+:root {
+    /* Brand */
+    --color-primary: #0f766e;
+    --color-primary-dark: #134e4a;
+    --color-primary-soft: #ccfbf1;
+    --color-accent: #d97706;
+    --color-accent-dark: #b45309;
+
+    /* Neutrals / surfaces (light) */
+    --color-ink: #111827;
+    --color-muted: #6b7280;
+    --color-line: #e5e7eb;
+    --color-surface: #ffffff;
+    --color-surface-2: #f3f4f6;
+    --color-bg: #f8f7f4;
+
+    /* Status */
+    --color-success: #15803d;
+    --color-danger: #b91c1c;
+    --color-warning: #b45309;
+
+    /* On-brand text (text placed on primary/accent fills) */
+    --color-on-primary: #ffffff;
+
+    /* Typography */
+    --font-head: 'Playfair Display', Georgia, serif;
+    --font-body: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+
+    /* Shape & depth */
+    --radius: 10px;
+    --radius-sm: 6px;
+    --radius-pill: 999px;
+    --shadow: 0 1px 3px rgba(0, 0, 0, .08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, .12);
+
+    /* Spacing scale */
+    --space-1: .4rem;
+    --space-2: .8rem;
+    --space-3: 1.2rem;
+    --space-4: 1.6rem;
+    --space-5: 2.4rem;
+    --space-6: 3.2rem;
+
+    --container-max: 1200px;
+}
+
+[data-theme="dark"] {
+    --color-primary: #2dd4bf;
+    --color-primary-dark: #14b8a6;
+    --color-primary-soft: #134e4a;
+    --color-accent: #f59e0b;
+    --color-accent-dark: #d97706;
+
+    --color-ink: #e5e7eb;
+    --color-muted: #9aa4b2;
+    --color-line: #2c333f;
+    --color-surface: #1b1f27;
+    --color-surface-2: #232834;
+    --color-bg: #0f1115;
+
+    --color-on-primary: #06241f;
+
+    --shadow: 0 1px 3px rgba(0, 0, 0, .5);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, .55);
+}
+
+/* Smooth the light/dark transition (kept subtle to avoid jank). */
+body,
+.card,
+.btn,
+.form-control,
+.table th,
+.table td {
+    transition: background-color .25s ease, color .25s ease, border-color .25s ease;
+}
+
+/* ---------------------------------------------------------------- Buttons */
+.btn {
+    display: inline-block;
+    background: var(--color-primary);
+    color: var(--color-on-primary);
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: .8rem 1.6rem;
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: 1.4rem;
+    line-height: 1.4;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color .2s ease, transform .05s ease;
+}
+
+.btn:hover { background: var(--color-primary-dark); color: var(--color-on-primary); }
+.btn:active { transform: translateY(1px); }
+.btn--accent { background: var(--color-accent); }
+.btn--accent:hover { background: var(--color-accent-dark); }
+.btn--danger { background: var(--color-danger); }
+.btn--danger:hover { filter: brightness(.92); }
+.btn--ghost {
+    background: transparent;
+    color: var(--color-ink);
+    border: 1px solid var(--color-line);
+}
+.btn--ghost:hover { background: var(--color-surface-2); color: var(--color-ink); }
+
+/* ----------------------------------------------------------------- Cards */
+.card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: var(--space-5);
+}
+
+/* ---------------------------------------------------------------- Badges */
+.badge {
+    display: inline-block;
+    padding: .2rem .9rem;
+    border-radius: var(--radius-pill);
+    font-size: 1.2rem;
+    font-weight: 600;
+    background: var(--color-surface-2);
+    color: var(--color-ink);
+}
+.badge--low { background: #fde2e1; color: var(--color-danger); }
+[data-theme="dark"] .badge--low { background: #3a1f1f; color: #fca5a5; }
+
+/* --------------------------------------------------------- Form controls */
+.form-control {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.5rem;
+    font-family: var(--font-body);
+    color: var(--color-ink);
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-sm);
+    box-sizing: border-box;
+}
+.form-control:focus {
+    outline: 0;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-soft);
+}
+
+/* ---------------------------------------------------- Responsive tables */
+.table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background: var(--color-surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+.table th,
+.table td {
+    text-align: left;
+    padding: 1rem 1.4rem;
+    border-bottom: 1px solid var(--color-line);
+    font-size: 1.4rem;
+    white-space: nowrap;
+}
+.table th { background: var(--color-primary); color: var(--color-on-primary); }
+
+/* ------------------------------------------------------ Theme toggle btn */
+.theme-toggle {
+    background: transparent;
+    border: 1px solid var(--color-line);
+    color: inherit;
+    border-radius: var(--radius-pill);
+    width: 3.6rem;
+    height: 3.6rem;
+    font-size: 1.6rem;
+    line-height: 1;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.theme-toggle:hover { background: var(--color-surface-2); }
+
+/* Helper */
+.container { max-width: var(--container-max); margin: 0 auto; padding: 0 1.6rem; }

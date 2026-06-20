@@ -227,11 +227,13 @@ def download_receipt(request, order_id):
 
     styles = getSampleStyleSheet()
 
+    # Brand colors mirror static/css/theme.css (--color-primary / --color-primary-dark);
+    # ReportLab can't read CSS vars, so keep these hexes in sync with the theme.
     title_style = ParagraphStyle(
         'ReceiptTitle',
         parent=styles['Title'],
         fontSize=24,
-        textColor=colors.HexColor('#037bc0'),
+        textColor=colors.HexColor('#0f766e'),
         spaceAfter=6,
     )
     subtitle_style = ParagraphStyle(
@@ -246,7 +248,7 @@ def download_receipt(request, order_id):
         'ReceiptHeading',
         parent=styles['Heading2'],
         fontSize=14,
-        textColor=colors.HexColor('#005485'),
+        textColor=colors.HexColor('#134e4a'),
         spaceAfter=10,
     )
 
@@ -287,7 +289,7 @@ def download_receipt(request, order_id):
 
     items_table = Table(table_data, colWidths=[250, 50, 90, 90])
     items_table.setStyle(TableStyle([
-        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#037bc0')),
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#0f766e')),
         ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
         ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
         ('FONTSIZE', (0, 0), (-1, 0), 11),
@@ -301,7 +303,7 @@ def download_receipt(request, order_id):
         ('FONTNAME', (0, -1), (-1, -1), 'Helvetica-Bold'),
         ('FONTSIZE', (0, -1), (-1, -1), 12),
         ('TOPPADDING', (0, -1), (-1, -1), 12),
-        ('LINEABOVE', (0, -1), (-1, -1), 2, colors.HexColor('#037bc0')),
+        ('LINEABOVE', (0, -1), (-1, -1), 2, colors.HexColor('#0f766e')),
         ('GRID', (0, 0), (-1, -2), 0.5, colors.HexColor('#cccccc')),
         ('ALIGN', (1, 0), (-1, -1), 'CENTER'),
         ('ALIGN', (-1, 0), (-1, -1), 'RIGHT'),

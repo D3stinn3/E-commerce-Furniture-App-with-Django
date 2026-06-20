@@ -1,11 +1,17 @@
 asgiref==3.8.0
 Django==5.0.3
-pillow==10.2.0
-psycopg2==2.9.9
-simplejson==3.19.2
+# pillow / reportlab use >= so pip picks a build with wheels for your Python
+# version (e.g. Python 3.13). Older exact pins had no 3.13 wheel and tried to
+# compile from source, which fails without C build tools.
+pillow>=10.4.0
 sqlparse==0.4.4
 tzdata==2024.1
-reportlab==4.1.0
+reportlab>=4.2.0
 chardet==5.2.0
 python-dotenv==1.0.1
 requests==2.32.5
+
+# Optional: only needed if you switch DATABASES to PostgreSQL (default is SQLite).
+# Uncomment to enable, and use the -binary build so no local Postgres/C toolchain
+# is required:
+# psycopg2-binary>=2.9.10

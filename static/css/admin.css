@@ -1,0 +1,144 @@
+/* ============================================================================
+   admin.css — owner dashboard. Consumes tokens from theme.css.
+   Dark brand sidebar + light content; responsive drawer on tablet/mobile.
+   Breakpoints: mobile <576 · tablet 576–991 · desktop >=992
+   ========================================================================== */
+
+body.admin {
+    margin: 0;
+    font-family: var(--font-body);
+    background: var(--color-bg);
+    color: var(--color-ink);
+}
+
+.admin-layout { display: flex; min-height: 100vh; }
+
+/* ------------------------------------------------------------- Top bar */
+/* Slim bar holding the hamburger; only shown below desktop. */
+.admin-topbar {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    padding: 1rem 1.6rem;
+    background: var(--color-primary-dark);
+    color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+}
+.admin-topbar .brand { font-family: var(--font-head); font-size: 1.8rem; }
+.sidebar-toggle {
+    display: inline-flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 4px;
+    width: 4rem;
+    height: 4rem;
+    padding: .9rem;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, .35);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+}
+.sidebar-toggle span { display: block; height: 2px; background: #fff; border-radius: 2px; }
+
+/* ------------------------------------------------------------- Sidebar */
+.admin-sidebar {
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--color-primary-dark);
+    color: #cfeee9;
+    padding: 2rem 0;
+    display: flex;
+    flex-direction: column;
+}
+.admin-sidebar .brand {
+    font-family: var(--font-head);
+    font-size: 2rem;
+    color: #fff;
+    padding: 0 2rem 1.6rem;
+    border-bottom: 1px solid rgba(255, 255, 255, .15);
+    margin-bottom: 1rem;
+}
+.admin-sidebar a {
+    display: block;
+    color: #cfeee9;
+    text-decoration: none;
+    padding: 1.1rem 2rem;
+    font-size: 1.4rem;
+}
+.admin-sidebar a:hover,
+.admin-sidebar a.active {
+    background: var(--color-primary);
+    color: #fff;
+}
+.admin-sidebar .sidebar-foot {
+    margin-top: auto;
+    padding: 1.4rem 2rem 0;
+    border-top: 1px solid rgba(255, 255, 255, .15);
+}
+.admin-sidebar .theme-toggle { color: #fff; border-color: rgba(255, 255, 255, .35); }
+.admin-sidebar .theme-toggle:hover { background: rgba(255, 255, 255, .12); }
+
+/* ------------------------------------------------------------ Content */
+.admin-content { flex: 1; padding: 2.8rem 3.2rem; min-width: 0; }
+.admin-content h1 { font-family: var(--font-head); margin-top: 0; }
+
+/* KPI cards: reflow 4 -> 2 -> 1 */
+.cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.6rem; margin-bottom: 2.8rem; }
+.card .label { color: var(--color-muted); font-size: 1.3rem; }
+.card .value { font-size: 2.6rem; font-weight: 700; color: var(--color-primary); margin-top: .6rem; }
+
+/* Filters row on the reports page */
+.filters { display: flex; gap: 1.2rem; align-items: flex-end; margin-bottom: 2rem; flex-wrap: wrap; }
+label { font-weight: 600; font-size: 1.3rem; display: block; margin-bottom: .4rem; }
+form.inline { display: inline; }
+
+/* Messages */
+.messages { list-style: none; padding: 0; }
+.messages li {
+    background: var(--color-primary-soft);
+    border: 1px solid var(--color-primary);
+    color: var(--color-ink);
+    padding: 1rem 1.4rem;
+    border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
+}
+
+/* Backdrop for the drawer */
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, .45);
+    z-index: 30;
+}
+.sidebar-backdrop.show { display: block; }
+
+/* ----------------------------------------------------- Desktop (>=992) */
+@media (min-width: 992px) {
+    .admin-topbar { display: none; }          /* sidebar is always visible */
+    .admin-sidebar { position: sticky; top: 0; height: 100vh; }
+}
+
+/* -------------------------------------------- Tablet & mobile (<992px) */
+@media (max-width: 991px) {
+    .admin-layout { display: block; }
+    .admin-sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        transform: translateX(-100%);
+        transition: transform .25s ease;
+        z-index: 50;
+    }
+    .admin-sidebar.open { transform: translateX(0); }
+    .admin-content { padding: 2rem 1.6rem; }
+    .cards { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 575px) {
+    .cards { grid-template-columns: 1fr; }
+    .admin-content { padding: 1.6rem 1.2rem; }
+}
