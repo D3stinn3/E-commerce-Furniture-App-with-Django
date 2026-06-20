@@ -152,13 +152,11 @@ MEDIA_URL = '/media/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_USE_TLS = True
-EMAIL_PORT = 587
-EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', '')
-EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD', '')
-# Where contact-form submissions are delivered (falls back to the sending account).
+# Email: no SMTP. Mail (e.g. the contact form) is printed to the server console
+# instead of being sent, so the app never tries to authenticate against Gmail.
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER', 'noreply@example.com')
+# Where contact-form submissions would be addressed (falls back to the sender).
 EMAIL_RECEIVING_USER = os.environ.get('EMAIL_RECEIVING_USER', EMAIL_HOST_USER)
 
 # @login_required redirects to the project's custom login view (url name 'login',
