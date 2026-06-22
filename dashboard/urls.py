@@ -10,4 +10,5 @@ urlpatterns = [
     path('inventory/<int:pk>/delete/', views.product_delete, name='dashboard_product_delete'),
     path('reports/', views.reports, name='dashboard_reports'),
     path('reports/export/', views.reports_export, name='dashboard_reports_export'),
+    path('reports/export/pdf/', views.reports_export_pdf, name='dashboard_reports_export_pdf'),
 ]

@@ -148,3 +148,107 @@ def reports_export(request):
             order.created_at.strftime('%Y-%m-%d %H:%M'),
         ])
     return response
+
+
+@staff_member_required
+def reports_export_pdf(request):
+    orders, start, end = _report_orders(request)
+
+    total_revenue = orders.aggregate(total=Sum('total_price'))['total'] or 0
+    order_count = orders.count()
+    units_sold = (
+        OrderItem.objects.filter(order__in=orders).aggregate(total=Sum('quantity'))['total'] or 0
+    )
+    top_products = (
+        OrderItem.objects.filter(order__in=orders)
+        .values('product_title')
+        .annotate(qty=Sum('quantity'), revenue=Sum(F('product_price') * F('quantity')))
+        .order_by('-revenue')[:10]
+    )
+
+    from reportlab.lib.pagesizes import A4
+    from reportlab.lib import colors
+    from reportlab.lib.units import mm
+    from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+    from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+    import io
+
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=A4,
+                            topMargin=25 * mm, bottomMargin=20 * mm,
+                            leftMargin=18 * mm, rightMargin=18 * mm)
+    styles = getSampleStyleSheet()
+    title_style = ParagraphStyle('RT', parent=styles['Title'], fontSize=20,
+                                 textColor=colors.HexColor('#0f766e'), spaceAfter=4)
+    sub_style = ParagraphStyle('RS', parent=styles['Normal'], fontSize=10,
+                               textColor=colors.HexColor('#555555'), spaceAfter=16)
+    heading_style = ParagraphStyle('RH', parent=styles['Heading2'], fontSize=13,
+                                   textColor=colors.HexColor('#134e4a'), spaceAfter=8)
+
+    period = 'All time'
+    if start or end:
+        period = f"{start or '…'} to {end or '…'}"
+
+    elements = [
+        Paragraph('Sales Report', title_style),
+        Paragraph(f'Modern Furniture Store &mdash; {period}', sub_style),
+    ]
+
+    header_style = TableStyle([
+        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#0f766e')),
+        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+        ('FONTSIZE', (0, 0), (-1, -1), 10),
+        ('ALIGN', (1, 0), (-1, -1), 'RIGHT'),
+        ('TOPPADDING', (0, 0), (-1, -1), 6),
+        ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+        ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f3f4f6')]),
+        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cccccc')),
+    ])
+
+    # Summary
+    elements.append(Paragraph('Summary', heading_style))
+    summary = Table([
+        ['Metric', 'Value'],
+        ['Revenue (paid)', f'KES {total_revenue}'],
+        ['Paid orders', str(order_count)],
+        ['Units sold', str(units_sold)],
+    ], colWidths=[320, 140])
+    summary.setStyle(header_style)
+    elements.append(summary)
+    elements.append(Spacer(1, 16))
+
+    # Top products
+    elements.append(Paragraph('Top products', heading_style))
+    tp_data = [['Product', 'Qty', 'Revenue']]
+    for row in top_products:
+        tp_data.append([row['product_title'], str(row['qty']), f"KES {row['revenue']}"])
+    if len(tp_data) == 1:
+        tp_data.append(['No sales in this period.', '', ''])
+    tp = Table(tp_data, colWidths=[300, 80, 80])
+    tp.setStyle(header_style)
+    elements.append(tp)
+    elements.append(Spacer(1, 16))
+
+    # Orders
+    elements.append(Paragraph('Orders', heading_style))
+    o_data = [['Order', 'Customer', 'Status', 'Total', 'Created']]
+    for order in orders.select_related('user'):
+        o_data.append([
+            order.order_number,
+            order.user.username,
+            order.status,
+            f'KES {order.total_price}',
+            order.created_at.strftime('%Y-%m-%d %H:%M'),
+        ])
+    if len(o_data) == 1:
+        o_data.append(['No orders in this period.', '', '', '', ''])
+    od = Table(o_data, colWidths=[80, 130, 70, 90, 110])
+    od.setStyle(header_style)
+    elements.append(od)
+
+    doc.build(elements)
+    buffer.seek(0)
+    response = HttpResponse(buffer, content_type='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename="sales_report.pdf"'
+    return response

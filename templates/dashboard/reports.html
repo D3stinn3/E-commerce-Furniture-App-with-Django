@@ -14,6 +14,7 @@
     </div>
     <button type="submit" class="btn">Apply</button>
     <a class="btn btn--ghost" href="{% url 'dashboard_reports_export' %}?start={{ start }}&end={{ end }}">Export CSV</a>
+    <a class="btn btn--ghost" href="{% url 'dashboard_reports_export_pdf' %}?start={{ start }}&end={{ end }}">Export PDF</a>
 </form>
 
 <div class="cards">
